@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.views.generic import CreateView
+from conference_rooms.models import Room
 
-# Create your views here.
+
+class RoomCreateView(CreateView):
+    model = Room
+    fields = '__all__'
+    success_url = '/room/new/'
