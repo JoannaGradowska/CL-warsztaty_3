@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for room in rooms %}
+        <p><a href="/room/{{ room.pk }}"> {{ room.name }} </a></p>
+    {% endfor %}
+{% endblock %}

@@ -16,14 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from conference_rooms.views import RoomCreateView
+from conference_rooms.views import RoomCreate, RoomModify, RoomDelete, RoomDetails, RoomsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('room/new/', RoomCreateView.as_view()),
-    # path('room/modify/<int:id>/', ),
-    # path('room/delete/<int:id>/', ),
-    # path('room/<int:id>/', ),
-    # path('/', )
+    path('room/new/', RoomCreate.as_view()),
+    path('room/modify/<int:pk>/', RoomModify.as_view()),
+    path('room/delete/<int:pk>/', RoomDelete.as_view()),
+    path('room/<int:pk>/', RoomDetails.as_view()),
+    path('', RoomsView.as_view()),
 
 ]
