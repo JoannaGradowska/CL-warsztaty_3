@@ -3,4 +3,6 @@
  <h3>Room {{ room.name }}</h3>
     <p>Capacity: {{ room.capacity }}</p>
     <p>Projector: {% if room.projector %}Yes{% else %}No{% endif %}</p>
+    {% include 'form.html' %}
+    {{ end }}
 {% endblock %}

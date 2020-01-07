@@ -1,8 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.generic.base import View
 
-from conference_rooms.models import Room
+from conference_rooms.forms import ReservationForm
+from conference_rooms.models import Room, Reservation
 
 
 class RoomCreate(CreateView):
@@ -25,9 +26,38 @@ class RoomDelete(DeleteView):
 
 class RoomDetails(View):
     def get(self, request, pk):
+        room = Room.objects.get(pk=pk)
+        form = ReservationForm()
         return render(request, 'room_details.html', context={
-            'room': Room.objects.get(pk=pk),
+            'room': room,
+            'form': form,
         })
+
+    def post(self, request, pk):
+        form = ReservationForm(request.POST)
+        room = Room.objects.get(pk=pk)
+        if form.is_valid():
+            reservation = Reservation()
+            reservation.date = form.cleaned_data['date']
+            reservation.comment = form.cleaned_data['comment']
+            reservation.room_id = pk
+            reservations_for_this_room = Reservation.objects.filter(room_id=pk)
+            for res in reservations_for_this_room:
+                if res.date == form.cleaned_data['date']:
+                    return render(request, 'room_details.html', context={
+                        'room': room,
+                        'form': form,
+                        'end': f"You cannot make reservation for{Room.objects.get(pk=pk)} on the{reservation.date}."})
+
+            reservation.save()
+
+            return redirect('/')
+        else:
+            return render(request, 'room_details.html', context={
+                'room': room,
+                'form': form,
+                'end': "The date of reservation cannot be in the past!"
+            })
 
 
 class RoomsView(View):
