@@ -1,16 +1,29 @@
 {% extends 'base.html' %}
 {% block content %}
+    Search rooms for reservation:
     <form method="get" action="">
-        <input type="text" name="room_name" placeholder="room name" minlength="3">
-        <input type="submit" value="Search">
+        <input type="text" name="room_name" placeholder="name" minlength="3"><br>
+        <input type="date" name="date" placeholder="YYYY-MM-DD" required><br>
+        <input type="number" name="capacity" placeholder="min. capacity"><br>
+        Projector <input type="checkbox" name="projector" value="True"><br>
+        <input type="submit" value="search">
     </form>
     {{ alert }}
-    {% if searches %}
-        Reservations for {{ room_name }} room
+    {% if rooms %}
+        Available rooms for {{ date }} {% if projector %}
+        with projector {% else %} without projector {% endif %}
+        {% if capacity %} and at least {{ capacity }} seats
+        {% endif %} {% if room_name %} that contains "{{ room_name }}" in a name {% endif %}
     {% endif %}
-    {% for search in searches %}
-        <li><a href="/reservation/{{ search.id }}">{{ search.date }}</a></li>
-    {% empty %}
-        <li>There is no room with that name</li>
+    {% for room in rooms %}
+        <li>{{ room.name }}</li>
     {% endfor %}
+    {% if empty %}
+        There is no available room for {{ date }}
+        {% if projector %}
+            with projector {% else %} without projector {% endif %}
+        {% if capacity %} with at least {{ capacity }} seats {% endif %}{% if room_name %} that contains "
+        {{ room_name }}" in a name {% endif %}
+    {% endif %}
+
 {% endblock %}
