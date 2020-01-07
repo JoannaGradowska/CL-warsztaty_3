@@ -41,23 +41,24 @@ class RoomDetails(View):
             reservation.date = form.cleaned_data['date']
             reservation.comment = form.cleaned_data['comment']
             reservation.room_id = pk
-            reservations_for_this_room = Reservation.objects.filter(room_id=pk)
-            for res in reservations_for_this_room:
-                if res.date == form.cleaned_data['date']:
-                    return render(request, 'room_details.html', context={
-                        'room': room,
-                        'form': form,
-                        'end': f"You cannot make reservation for{Room.objects.get(pk=pk)} on the{reservation.date}."})
-
-            reservation.save()
-
-            return redirect('/')
+            return self.checking_for_same_day_reservation(form, pk, request, reservation, room)
         else:
             return render(request, 'room_details.html', context={
                 'room': room,
                 'form': form,
-                'end': "The date of reservation cannot be in the past!"
             })
+
+    @staticmethod
+    def checking_for_same_day_reservation(form, pk, request, reservation, room):
+        reservations_for_this_room = Reservation.objects.filter(room_id=pk)
+        for res in reservations_for_this_room:
+            if res.date == form.cleaned_data['date']:
+                return render(request, 'room_details.html', context={
+                    'room': room,
+                    'form': form,
+                    'end': f"You cannot make reservation for {Room.objects.get(pk=pk)} room on the {reservation.date}."})
+        reservation.save()
+        return redirect('/')
 
 
 class RoomsView(View):
