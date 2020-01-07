@@ -66,3 +66,25 @@ class RoomsView(View):
         return render(request, 'rooms.html', context={
             'rooms': Room.objects.all()
         })
+
+
+class Search(View):
+    def get(self, request):
+        reservation = Reservation.objects.all()
+        room_name = request.GET.get("room_name")
+        if room_name:
+            return self.searching_by_room_name(request, reservation)
+        else:
+            return render(request, 'search.html')
+
+    @staticmethod
+    def searching_by_room_name(request, reservation):
+        room_name = request.GET.get("room_name")
+        reservation = reservation.filter(room__name__icontains=room_name)
+        if reservation is not None:
+            return render(request, 'search.html', context={
+                "searches": reservation,
+                "room_name": room_name,
+            })
+        else:
+            return render(request, 'search.html')

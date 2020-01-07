@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="get" action="">
+        <input type="text" name="room_name" placeholder="room name" minlength="3">
+        <input type="submit" value="Search">
+    </form>
+    {{ alert }}
+    {% if searches %}
+        Reservations for {{ room_name }} room
+    {% endif %}
+    {% for search in searches %}
+        <li><a href="/reservation/{{ search.id }}">{{ search.date }}</a></li>
+    {% empty %}
+        <li>There is no room with that name</li>
+    {% endfor %}
+{% endblock %}
