@@ -16,7 +16,7 @@
         {% endif %} {% if room_name %} that contains "{{ room_name }}" in a name {% endif %}
     {% endif %}
     {% for room in rooms %}
-        <li>{{ room.name }}</li>
+        <li><a href="/room/{{ room.pk }}">{{ room.name }}</a></li>
     {% endfor %}
     {% if empty %}
         There is no available room for {{ date }}

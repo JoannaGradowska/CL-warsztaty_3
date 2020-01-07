@@ -94,19 +94,20 @@ class Search(View):
                         rooms = rooms.exclude(pk=room.pk)
             if room_name:
                 rooms = rooms.filter(name__icontains=room_name)
-        print(len(rooms))
-        if len(rooms) == 0:
-            return render(request, 'search.html', context={
-                "empty": "_",
-            })
+            if len(rooms) == 0:
+                return render(request, 'search.html', context={
+                    "empty": "_",
+                })
+            else:
+                return render(request, 'search.html', context={
+                    "rooms": rooms,
+                    "date": date,
+                    "projector": projector,
+                    "capacity": capacity,
+                    "room_name": room_name,
+                })
         else:
-            return render(request, 'search.html', context={
-                "rooms": rooms,
-                "date": date,
-                "projector": projector,
-                "capacity": capacity,
-                "room_name": room_name,
-            })
+            return render(request, 'search.html')
 
     @staticmethod
     def searching_by_room_name(request, reservation):
