@@ -1,4 +1,6 @@
-from django.shortcuts import render, get_object_or_404, redirect
+import datetime
+
+from django.shortcuts import render, redirect
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.generic.base import View
 
@@ -66,3 +68,55 @@ class RoomsView(View):
         return render(request, 'rooms.html', context={
             'rooms': Room.objects.all()
         })
+
+
+class Search(View):
+    def get(self, request):
+        rooms = Room.objects.all()
+        room_name = request.GET.get("room_name")
+        date = request.GET.get("date")
+        capacity = request.GET.get("capacity")
+        projector = request.GET.get("projector")
+        today = datetime.date.today()
+
+        if date:
+            date_obj = datetime.datetime.strptime(date, '%Y-%m-%d').date()
+            if date_obj < today:
+                return render(request, 'search.html', context={
+                    "alert": "Please pick date from the future"
+                })
+            rooms = rooms.exclude(reservation__date=date)
+            if projector:
+                rooms = rooms.filter(projector=True)
+            if capacity:
+                for room in rooms:
+                    if int(room.capacity) < int(capacity):
+                        rooms = rooms.exclude(pk=room.pk)
+            if room_name:
+                rooms = rooms.filter(name__icontains=room_name)
+            if len(rooms) == 0:
+                return render(request, 'search.html', context={
+                    "empty": "_",
+                })
+            else:
+                return render(request, 'search.html', context={
+                    "rooms": rooms,
+                    "date": date,
+                    "projector": projector,
+                    "capacity": capacity,
+                    "room_name": room_name,
+                })
+        else:
+            return render(request, 'search.html')
+
+    @staticmethod
+    def searching_by_room_name(request, reservation):
+        room_name = request.GET.get("room_name")
+        reservation = reservation.filter(room__name__icontains=room_name)
+        if reservation is not None:
+            return render(request, 'search.html', context={
+                "searches": reservation,
+                "room_name": room_name,
+            })
+        else:
+            return render(request, 'search.html')

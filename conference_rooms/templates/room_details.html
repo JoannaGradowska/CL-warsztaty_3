@@ -5,4 +5,7 @@
     <p>Projector: {% if room.projector %}Yes{% else %}No{% endif %}</p>
     {% include 'form.html' %}
     {{ end }}
+
+    <a href="/room/modify/{{ room.pk }}">Edit</a>
+    <a href="/room/delete/{{ room.pk }}">Delete</a>
 {% endblock %}
